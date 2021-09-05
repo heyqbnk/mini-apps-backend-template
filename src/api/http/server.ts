@@ -13,7 +13,7 @@ import {isString} from '~/shared/utils';
 import {
   defaultErrorHandler,
   launchParamsHandler,
-  sentryEntryHandler, sentryFlushHandler,
+  sentryHandler,
 } from '~/api/http/handlers';
 
 /**
@@ -54,8 +54,7 @@ function useApolloHandlers(
 
   // POST-запросы используются для выполнения всех операций сервера.
   app.post(
-    endpoint, launchParamsHandler, sentryEntryHandler, middleware,
-    sentryFlushHandler
+    endpoint, launchParamsHandler, sentryHandler, middleware,
   );
 
   // GET-запросы используются для получения Playground. Его ПО обрабатывает
