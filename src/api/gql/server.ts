@@ -5,6 +5,7 @@ import {createApolloServer} from '~/api/gql/utils';
 import {Container} from 'typedi';
 import {ConfigToken} from '~/shared/di';
 import {ApolloServer} from 'apollo-server-express';
+import {isString} from '~/shared/utils';
 
 /**
  * Создает сервер Apollo для пользовательской ручки.
@@ -15,7 +16,8 @@ export const createPublicApolloServer = (): Promise<ApolloServer> => {
 
   return createApolloServer({
     resolvers: [...getSharedResolvers(), ...getPublicResolvers()],
-    subscriptionsPath: gqlPublicWsEndpoint,
+    subscriptionsPath: isString(gqlPublicWsEndpoint)
+      ? gqlPublicWsEndpoint : undefined,
   });
 };
 
@@ -28,6 +30,7 @@ export const createAdminApolloServer = (): Promise<ApolloServer> => {
 
   return createApolloServer({
     resolvers: [...getSharedResolvers(), ...getAdminResolvers()],
-    subscriptionsPath: gqlAdminWsEndpoint,
+    subscriptionsPath: isString(gqlAdminWsEndpoint)
+      ? gqlAdminWsEndpoint : undefined,
   });
 };

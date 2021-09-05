@@ -8,8 +8,8 @@ import {IConfig} from '~/shared/config/types';
 import {Container} from 'typedi';
 import {ConfigToken} from '~/shared/di';
 
-interface IGetStringOptions {
-  defaultValue?: string;
+interface IGetStringOptions<Default = string> {
+  defaultValue?: Default;
 }
 
 interface IGetNumberOptions {
@@ -73,10 +73,10 @@ export function getNumber(
  * @param variableName
  * @param options
  */
-export function getString(
+export function getString<Default = string>(
   variableName: string,
-  options: IGetStringOptions = {},
-): string {
+  options: IGetStringOptions<Default> = {},
+): string | Default {
   const {defaultValue} = options;
   const value = process.env[variableName];
 

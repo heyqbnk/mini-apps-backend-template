@@ -27,9 +27,9 @@
 | `ENABLE_CORS` | `boolean` | нет | `0` | Включить CORS |
 | `ENABLE_LAUNCH_PARAMS_EXPIRATION` | `boolean` | нет | `1` | Включить проверку на истечение срока действия параметров запуска |   
 | `GQL_PUBLIC_HTTP_ENDPOINT` | `string` | нет | `/gql` | Путь GraphQL для доступа к пользовательским запросам |
-| `GQL_PUBLIC_WS_ENDPOINT` | `string` | нет | `/gql/ws` | Путь GraphQL для доступа к пользовательскому веб-сокет подключению |
+| `GQL_PUBLIC_WS_ENDPOINT` | `string` | нет | | Путь GraphQL для доступа к пользовательскому веб-сокет подключению |
 | `GQL_ADMIN_HTTP_ENDPOINT` | `string` | нет | `/gql-adm` | Путь GraphQL для доступа к админским запросам |
-| `GQL_ADMIN_WS_ENDPOINT` | `string` | нет | `/gql-adm/ws` | Путь GraphQL для доступа к пользовательскому веб-сокет подключению |
+| `GQL_ADMIN_WS_ENDPOINT` | `string` | нет | | Путь GraphQL для доступа к пользовательскому веб-сокет подключению |
 | `MAX_THREADS_COUNT` | `number` | нет | `1` | Максимальное количество поток, в которое можно запустить сервер |
 | `PORT` | `number` | да | | Номер порта сервера |
 | `SENTRY_DSN` | `string` | Обязателен при `APP_ENV` равном `staging` или `production` | | Sentry DSN для логирования ошибок |

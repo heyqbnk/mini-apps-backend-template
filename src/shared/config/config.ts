@@ -22,9 +22,9 @@ const sentryDsn = getString('SENTRY_DSN', {
   defaultValue: appEnv === 'local' ? '' : undefined,
 });
 const gqlPublicHttpEndpoint = getString('GQL_PUBLIC_HTTP_ENDPOINT', {defaultValue: '/gql'});
-const gqlPublicWsEndpoint = getString('GQL_PUBLIC_WS_ENDPOINT', {defaultValue: '/gql/ws'});
+const gqlPublicWsEndpoint = getString('GQL_PUBLIC_WS_ENDPOINT', {defaultValue: null});
 const gqlAdminHttpEndpoint = getString('GQL_ADMIN_HTTP_ENDPOINT', {defaultValue: '/gql-adm'});
-const gqlAdminWsEndpoint = getString('GQL_ADMIN_WS_ENDPOINT', {defaultValue: '/gql-adm/ws'});
+const gqlAdminWsEndpoint = getString('GQL_ADMIN_WS_ENDPOINT', {defaultValue: null});
 const maxThreadsCount = getNumber('MAX_THREADS_COUNT', {
   defaultValue: 1,
   type: 'positive',

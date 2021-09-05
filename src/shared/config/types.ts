@@ -16,9 +16,9 @@ export interface IConfig {
   release: string;
   sentryDsn: string | null;
   gqlPublicHttpEndpoint: string;
-  gqlPublicWsEndpoint: string;
+  gqlPublicWsEndpoint: string | null;
   gqlAdminHttpEndpoint: string;
-  gqlAdminWsEndpoint: string;
+  gqlAdminWsEndpoint: string | null;
   maxThreadsCount: number;
   nodeEnv: TNodeEnvironment;
   vkAppCredentials: IAppCredentials[];

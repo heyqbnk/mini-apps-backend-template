@@ -17,7 +17,7 @@ import {
 } from '~/api/http/handlers';
 
 /**
- * Возвращает middleware для сервера apollo.
+ * Возвращает ПО для сервера apollo.
  * @param server
  */
 function getServerMiddleware(server: ApolloServer) {
@@ -53,9 +53,7 @@ function useApolloHandlers(
   const middleware = getServerMiddleware(server);
 
   // POST-запросы используются для выполнения всех операций сервера.
-  app.post(
-    endpoint, launchParamsHandler, sentryHandler, middleware,
-  );
+  app.post(endpoint, launchParamsHandler, sentryHandler, middleware);
 
   // GET-запросы используются для получения Playground. Его ПО обрабатывает
   // самостоятельно.
