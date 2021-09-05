@@ -25,14 +25,18 @@
 | `APP_ENV` | `local`, `staging`, `production` | да | | Среда запуска приложения |
 | `APP_ID` | `number` | да | | Идентификатор приложения VK Mini Apps |
 | `ENABLE_CORS` | `boolean` | нет | `0` | Включить CORS |
-| `ENABLE_MULTI_THREAD` | `boolean` | нет | `1` | Включать мультипоточный режим |
 | `ENABLE_LAUNCH_PARAMS_EXPIRATION` | `boolean` | нет | `1` | Включить проверку на истечение срока действия параметров запуска |   
-| `GQL_PUBLIC_HTTP_ENDPOINT` | `string` | нет | `/gql` | Путь GraphQL для доступа к пользовательским запроса |
+| `GQL_PUBLIC_HTTP_ENDPOINT` | `string` | нет | `/gql` | Путь GraphQL для доступа к пользовательским запросам |
+| `GQL_PUBLIC_WS_ENDPOINT` | `string` | нет | `/gql/ws` | Путь GraphQL для доступа к пользовательскому веб-сокет подключению |
 | `GQL_ADMIN_HTTP_ENDPOINT` | `string` | нет | `/gql-adm` | Путь GraphQL для доступа к админским запросам |
+| `GQL_ADMIN_WS_ENDPOINT` | `string` | нет | `/gql-adm/ws` | Путь GraphQL для доступа к пользовательскому веб-сокет подключению |
+| `MAX_THREADS_COUNT` | `number` | нет | `1` | Максимальное количество поток, в которое можно запустить сервер |
 | `PORT` | `number` | да | | Номер порта сервера |
 | `SENTRY_DSN` | `string` | Обязателен при `APP_ENV` равном `staging` или `production` | | Sentry DSN для логирования ошибок |
 | `SENTRY_DEPLOY_TOKEN` | `string` | Обязателен при `APP_ENV` равном `staging` или `production` | | Токен Sentry используемый при деплое артефактов |
 | `VK_APP_CREDENTIALS` | `AppCredentials` | да | | Список приложений с их секретными ключами у которых есть доступ в API |
+| `VK_APP_API_ACCESS_TOKEN` | `string` | да | | Ключ доступа приложения |
+| `VK_APP_API_RPS` | `number` | нет | `3` | Максимальный RPS для для инстанса VKAPI на основе ключа приложения |
 
 ## Скрипты
 ### Общие

@@ -9,7 +9,6 @@ import {RewriteFrames} from '@sentry/integrations';
 import {config} from '~/shared/config';
 import path from 'path';
 
-// Инициализируем sentry.
 if (config.sentryDsn !== null) {
   const {sentryDsn, appEnv, release, appId} = config;
 
@@ -25,13 +24,12 @@ if (config.sentryDsn !== null) {
     shutdownTimeout: 1000,
     integrations: [new RewriteFrames({
       // В продакшене нам необходимо смотреть в директорию dist.
-      root: path.resolve(__dirname, '../..')
+      root: path.resolve(__dirname, '../..'),
     })],
   });
   Sentry.setTag('Node Version', process.version);
   Sentry.setTag('Application ID', appId);
 }
-
 // Заменяем контейнер в class-validator.
 useContainer(Container);
 

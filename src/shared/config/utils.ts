@@ -3,7 +3,7 @@ import {
   TAppEnvironment,
   TNodeEnvironment,
 } from '~/shared/types';
-import {isBoolean, isString, isUndefined} from '~/shared/utils';
+import {isBoolean, isString} from '~/shared/utils';
 import {IConfig} from '~/shared/config/types';
 import {Container} from 'typedi';
 import {ConfigToken} from '~/shared/di';
@@ -60,7 +60,7 @@ export function getNumber(
     (type === 'negative' && value >= 0) ||
     (type === 'positive' && value <= 0)
   ) {
-    if (isUndefined(defaultValue)) {
+    if (defaultValue === undefined) {
       throw createError(variableName);
     }
     return defaultValue;
@@ -186,7 +186,7 @@ export function getAppCredentials(
     }
     return parsed;
   }
-  if (!isUndefined(defaultValue)) {
+  if (defaultValue !== undefined) {
     return defaultValue;
   }
   throw createError(variableName);

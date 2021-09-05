@@ -22,10 +22,3 @@ export interface IAppCredentials {
   appId: number;
   secretKey: string;
 }
-
-/**
- * Аналог Partial, но распространяется на всю глубину.
- */
-export type TDeepPartial<T> = {
-  [K in keyof T]?: TDeepPartial<T[K]>;
-};

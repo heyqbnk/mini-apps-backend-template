@@ -3,7 +3,7 @@
  * @param value
  * @returns {value is Record<string, unknown>}
  */
-export function isObject(value: any): value is Record<string, unknown> {
+export function isRecord(value: any): value is Record<string, unknown> {
   return typeof value === 'object' && !Array.isArray(value) && value !== null;
 }
 
@@ -32,22 +32,4 @@ export function isString(value: any): value is string {
  */
 export function isNumber(value: any): value is number {
   return typeof value === 'number';
-}
-
-/**
- * Утверждает что value является undefined.
- * @param value
- * @returns {value is undefined}
- */
-export function isUndefined(value: any): value is undefined {
-  return typeof value === 'undefined';
-}
-
-/**
- * Утверждает что значение является массивом.
- * @param value
- * @returns {value is Array<unknown>}
- */
-export function isArray(value: any): value is Array<unknown> {
-  return Array.isArray(value);
 }

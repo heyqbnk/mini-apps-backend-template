@@ -11,13 +11,17 @@ export interface IConfig {
   appEnv: TAppEnvironment;
   appId: number;
   enableCors: boolean,
-  enableMultiThread: boolean;
   enableLaunchParamsExpiration: boolean;
   port: number;
   release: string;
   sentryDsn: string | null;
   gqlPublicHttpEndpoint: string;
+  gqlPublicWsEndpoint: string;
   gqlAdminHttpEndpoint: string;
+  gqlAdminWsEndpoint: string;
+  maxThreadsCount: number;
   nodeEnv: TNodeEnvironment;
   vkAppCredentials: IAppCredentials[];
+  vkAppApiRps: number;
+  vkAppApiAccessToken: string;
 }
