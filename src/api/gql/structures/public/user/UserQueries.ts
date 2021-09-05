@@ -3,6 +3,7 @@ import {User} from '~/api/gql/structures';
 import {Inject} from 'typedi';
 import {UsersService} from '~/shared/services';
 import {UseLaunchParams, LaunchParams} from '~/api/gql/decorators';
+import {NotFoundError} from '~/shared/errors';
 
 @ObjectType({
   description: 'Запросы, связанные с пользователем'
@@ -16,6 +17,7 @@ export class UserQueries {
     nullable: true,
   })
   current(@UseLaunchParams() {userId}: LaunchParams): Promise<Maybe<User>> {
+    throw new NotFoundError('Yep');
     return this
       .service
       .findById(userId)

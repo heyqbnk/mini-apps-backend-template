@@ -1,12 +1,9 @@
-import {createServer, Server} from 'http';
+import {createServer, Server as HttpServer} from 'http';
 import express, {Express} from 'express';
 import cors from 'cors';
 import {Container} from 'typedi';
 import {ConfigToken} from '~/shared/di';
-import {
-  createAdminApolloServer,
-  createPublicApolloServer,
-} from '~/api/gql';
+import {createAdminApolloServer, createPublicApolloServer} from '~/api/gql';
 import {registerEnums} from '~/api/gql/utils';
 import {ApolloServer} from 'apollo-server-express';
 import {isString} from '~/shared/utils';
@@ -15,49 +12,36 @@ import {
   launchParamsHandler,
   sentryHandler,
 } from '~/api/http/handlers';
-
-/**
- * Возвращает ПО для сервера apollo.
- * @param server
- */
-function getServerMiddleware(server: ApolloServer) {
-  return server.getMiddleware({path: '/', cors: false});
-}
-
-/**
- * Устанавливает хэндлеры создания подписки если в этом есть необходимость.
- * @param apolloServer
- * @param httpServer
- */
-function installSubscriptionHandlers(
-  apolloServer: ApolloServer,
-  httpServer: Server,
-) {
-  if (isString(apolloServer.subscriptionsPath)) {
-    apolloServer.installSubscriptionHandlers(httpServer);
-  }
-}
+import {Handlers} from '@sentry/node';
 
 /**
  * Привязывает к express-серверу сервер Apollo с минимальным набором
  * хэндлеров.
  * @param app
  * @param endpoint
- * @param server
+ * @param apolloServer
+ * @param httpServer
  */
-function useApolloHandlers(
-  app: Express,
+function useEndpointHandler(
   endpoint: string,
-  server: ApolloServer,
+  app: Express,
+  apolloServer: ApolloServer,
+  httpServer: HttpServer,
 ) {
-  const middleware = getServerMiddleware(server);
+  const middleware = apolloServer.getMiddleware({path: '/', cors: false});
 
   // POST-запросы используются для выполнения всех операций сервера.
   app.post(endpoint, launchParamsHandler, sentryHandler, middleware);
 
-  // GET-запросы используются для получения Playground. Его ПО обрабатывает
-  // самостоятельно.
+  // GET-запросы используются для получения Playground. Его ПО от Apollo
+  // обрабатывает самостоятельно.
   app.get(endpoint, middleware);
+
+  // В случае, если указан путь для создания подписок, устанавливаем
+  // специальные хэндлеры.
+  if (isString(apolloServer.subscriptionsPath)) {
+    apolloServer.installSubscriptionHandlers(httpServer);
+  }
 }
 
 /**
@@ -68,7 +52,7 @@ export async function startHttpServer() {
     port, gqlAdminHttpEndpoint, gqlPublicHttpEndpoint, enableCors,
   } = Container.get(ConfigToken);
   const app = express();
-  const server = createServer(app);
+  const httpServer = createServer(app);
 
   // Перед созданием серверов Apollo, регистрируем необходимые енумы.
   registerEnums();
@@ -79,9 +63,9 @@ export async function startHttpServer() {
     createPublicApolloServer(),
   ]);
 
-  // Создаем хэндлеры для подписок.
-  installSubscriptionHandlers(publicServer, server);
-  installSubscriptionHandlers(admServer, server);
+  // Добавляем хэндлер от Sentry, чтобы для каждого запроса выделялся отдельный
+  // скоуп.
+  app.use(Handlers.requestHandler());
 
   if (enableCors) {
     app.use(cors());
@@ -91,10 +75,10 @@ export async function startHttpServer() {
   app.use(defaultErrorHandler);
 
   // Создаем хэндлеры для ручек.
-  useApolloHandlers(app, gqlPublicHttpEndpoint, publicServer);
-  useApolloHandlers(app, gqlAdminHttpEndpoint, admServer);
+  useEndpointHandler(gqlPublicHttpEndpoint, app, publicServer, httpServer);
+  useEndpointHandler(gqlAdminHttpEndpoint, app, admServer, httpServer);
 
-  return server.listen(port, () => {
+  return httpServer.listen(port, () => {
     console.log(`Public: http://localhost:${port}${gqlPublicHttpEndpoint}`);
     console.log(`Admin: http://localhost:${port}${gqlAdminHttpEndpoint}`);
   });

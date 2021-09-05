@@ -15,6 +15,7 @@ import {GraphQLError, GraphQLFormattedError} from 'graphql';
 import {EError} from '~/shared/errors';
 import {ConfigToken} from '~/shared/di';
 import {UsersService} from '~/shared/services';
+import {SentryMiddleware} from '~/api/gql/middlewares';
 
 /**
  * Ошибка, отформатированная перед выбросом во внешнюю среду.
@@ -111,9 +112,8 @@ function onConnect(connectionParams: Record<any, any>): IAuthorizedLocals {
  * Функция, которая проверяет, имеется ли у текущего клиента доступ к получению
  * поля, для которого требуется авторизация.
  * @param resolverData
- * @param roles
  */
-const authChecker: AuthChecker<IContext, any> = async (resolverData, roles) => {
+const authChecker: AuthChecker<IContext, any> = resolverData => {
   const {context: {launchParams: {userId}}} = resolverData;
 
   return Container.get(UsersService).isAdmin(userId);
@@ -127,12 +127,13 @@ export async function createApolloServer(
   options: BuildSchemaOptions & {subscriptionsPath?: string},
 ): Promise<ApolloServer> {
   const {appEnv} = Container.get(ConfigToken);
-  const {subscriptionsPath, ...rest} = options;
+  const {subscriptionsPath, globalMiddlewares = [], ...rest} = options;
   const schema = await buildSchema({
     ...rest,
     authChecker,
     container: Container,
     pubSub: isString(subscriptionsPath) ? Container.get(PubSub) : undefined,
+    globalMiddlewares: [...globalMiddlewares, SentryMiddleware]
   });
   const isLocal = appEnv === 'local';
 

@@ -1,11 +1,7 @@
 import {ErrorRequestHandler, RequestHandler} from 'express';
 import * as Sentry from '@sentry/node';
 import {parse, ParsedUrlQuery} from 'querystring';
-import {
-  IAuthorizedLocals,
-  isAuthorizedLocals,
-  ISentryFilledLocals,
-} from '~/api/shared';
+import {IAuthorizedLocals, isAuthorizedLocals} from '~/api/shared';
 import {verifyLaunchParams} from '~/shared/utils';
 import {isServerError} from '~/shared/errors';
 
@@ -30,7 +26,7 @@ export const defaultErrorHandler: ErrorRequestHandler = (err, req, res, next) =>
   if (res.headersSent) {
     return next(err);
   }
-  res.status(500).json({message: 'Что-то пошло не так'});
+  res.status(500).json({message: 'Неизвестная ошибка'});
 };
 
 
@@ -86,8 +82,6 @@ export const sentryHandler: IAuthorizedRequestHandler = async (
   if (isAuthorizedLocals(res.locals)) {
     const {launchParams, launchParamsQuery} = res.locals;
 
-    console.log('1', Sentry.getCurrentHub().getScope()?.getUser())
-
     // С момента, как пользователь авторизован, конфигурируем для него Sentry
     // scope.
     Sentry.configureScope(scope => {
@@ -97,7 +91,7 @@ export const sentryHandler: IAuthorizedRequestHandler = async (
       // Добавляем параметры запуска пользователя.
       scope.setContext('Launch Parameters', launchParamsQuery);
     });
-    console.log('2', Sentry.getCurrentHub().getScope()?.getUser())
   }
+
   next();
 };

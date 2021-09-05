@@ -198,14 +198,16 @@ export function getAppCredentials(
 export function getSecuredConfig(): IConfig {
   const {
     vkAppCredentials,
+    vkAppApiAccessToken,
     ...rest
   } = Container.get(ConfigToken);
 
   return {
     ...rest,
     sentryDsn: 'hidden',
-    vkAppCredentials: vkAppCredentials.map(c => ({
-      appId: c.appId,
+    vkAppApiAccessToken: 'hidden',
+    vkAppCredentials: vkAppCredentials.map(({appId}) => ({
+      appId,
       secretKey: 'hidden',
     })),
   };
