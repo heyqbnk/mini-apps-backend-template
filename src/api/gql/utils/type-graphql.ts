@@ -12,7 +12,7 @@ import {Container} from 'typedi';
 import {PubSub} from '~/shared/lib';
 import {isRecord, isString, verifyLaunchParams} from '~/shared/utils';
 import {GraphQLError, GraphQLFormattedError} from 'graphql';
-import {EError} from '~/shared/errors';
+import {AuthorizationError, EError, NotFoundError} from '~/shared/errors';
 import {ConfigToken} from '~/shared/di';
 import {UsersService} from '~/shared/services';
 import {SentryMiddleware} from '~/api/gql/middlewares';
@@ -22,6 +22,10 @@ import {SentryMiddleware} from '~/api/gql/middlewares';
  */
 interface IFormattedError extends GraphQLFormattedError {
   name: string;
+}
+
+interface ICreateApolloServerOptions extends BuildSchemaOptions {
+  subscriptionsPath?: string
 }
 
 /**
@@ -42,8 +46,7 @@ const context: ContextFunction<ExpressContext, IContext> = expressContext => {
 
   if (connection === undefined) {
     if (!isAuthorizedLocals(res.locals)) {
-      // FIXME: Правильный выброс?
-      throw new Error('Non authorized');
+      throw new AuthorizationError('Параметры запуска не найдены');
     }
     return res.locals;
   }
@@ -57,14 +60,22 @@ const context: ContextFunction<ExpressContext, IContext> = expressContext => {
  */
 function formatError(error: GraphQLError): IFormattedError {
   const {name, extensions = {}, path, message} = error;
+  const contextCreationFailedText = 'Context creation failed: ';
 
-  // Ошибка выброшенная в декораторе Authorized от type-graphql.
-  if (message.startsWith('Access denied!')) {
+  // Ошибка создания контекста.
+  if (message.startsWith(contextCreationFailedText)) {
     return {
-      name: EError.Forbidden,
-      message,
+      name,
+      message: message.slice(
+        message.indexOf(contextCreationFailedText) +
+        contextCreationFailedText.length,
+      ),
       path,
     };
+  }
+  // Ошибка выброшенная в декораторе Authorized от type-graphql.
+  else if (message.startsWith('Access denied!')) {
+    return {name: EError.Forbidden, message, path};
   }
   // Если ошибка валидации через class-validator.
   else if (isRecord(extensions.exception) && 'validationErrors' in extensions.exception) {
@@ -124,7 +135,7 @@ const authChecker: AuthChecker<IContext, any> = resolverData => {
  * @param options
  */
 export async function createApolloServer(
-  options: BuildSchemaOptions & {subscriptionsPath?: string},
+  options: ICreateApolloServerOptions,
 ): Promise<ApolloServer> {
   const {appEnv} = Container.get(ConfigToken);
   const {subscriptionsPath, globalMiddlewares = [], ...rest} = options;
@@ -133,7 +144,7 @@ export async function createApolloServer(
     authChecker,
     container: Container,
     pubSub: isString(subscriptionsPath) ? Container.get(PubSub) : undefined,
-    globalMiddlewares: [...globalMiddlewares, SentryMiddleware]
+    globalMiddlewares: [SentryMiddleware, ...globalMiddlewares],
   });
   const isLocal = appEnv === 'local';
 
