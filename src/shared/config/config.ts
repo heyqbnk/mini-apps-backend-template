@@ -1,7 +1,7 @@
 import {IConfig} from './types';
 import {
   getAppCredentials, getAppEnvironment,
-  getBoolean, getNodeEnvironment,
+  getBoolean,
   getNumber,
   getString,
 } from './utils';
@@ -13,14 +13,7 @@ import packageJson from '../../../package.json';
 dotenv.config({path: path.resolve(__dirname, '../../../.env')});
 
 const appEnv = getAppEnvironment('APP_ENV');
-const appId = getNumber('APP_ID');
 const enableCors = getBoolean('ENABLE_CORS', {defaultValue: false});
-const enableLaunchParamsExpiration = getBoolean('ENABLE_LAUNCH_PARAMS_EXPIRATION', {defaultValue: true});
-const port = getNumber('PORT');
-const sentryDsn = getString('SENTRY_DSN', {
-  // В production и staging окружениях обязательно требуем sentry.
-  defaultValue: appEnv === 'local' ? '' : undefined,
-});
 const gqlPublicHttpEndpoint = getString('GQL_PUBLIC_HTTP_ENDPOINT', {defaultValue: '/gql'});
 const gqlPublicWsEndpoint = getString('GQL_PUBLIC_WS_ENDPOINT', {defaultValue: null});
 const gqlAdminHttpEndpoint = getString('GQL_ADMIN_HTTP_ENDPOINT', {defaultValue: '/gql-adm'});
@@ -29,29 +22,39 @@ const maxThreadsCount = getNumber('MAX_THREADS_COUNT', {
   defaultValue: 1,
   type: 'positive',
 });
-const nodeEnv = getNodeEnvironment('NODE_ENV', {defaultValue: 'production'});
-const vkAppCredentials = getAppCredentials('VK_APP_CREDENTIALS');
-const vkAppApiRps = getNumber('VK_APP_API_REQUESTS_PER_SECOND', {
+const port = getNumber('PORT');
+const sentryDsn = getString('SENTRY_DSN', {
+  // В production и staging окружениях обязательно требуем sentry.
+  defaultValue: appEnv === 'production' || appEnv === 'staging'
+    ? undefined
+    : '',
+});
+const vkAppApiAccessToken = getString('VK_APP_API_ACCESS_TOKEN');
+const vkAppApiRps = getNumber('VK_APP_API_RPS', {
   defaultValue: 3,
   type: 'positive',
 });
-const vkAppApiAccessToken = getString('VK_APP_API_ACCESS_TOKEN');
+const vkAppCredentials = getAppCredentials('VK_APP_CREDENTIALS');
+const vkAppId = getNumber('VK_APP_ID');
+const vkLaunchParamsExpiration = getNumber('VK_LAUNCH_PARAMS_EXPIRATION', {
+  defaultValue: 24 * 60 * 60,
+  type: 'positive',
+});
 
 export const config: IConfig = {
   appEnv,
-  appId,
-  port,
-  release: packageJson.version + '-' + appEnv,
-  sentryDsn: sentryDsn === '' ? null : sentryDsn,
+  enableCors,
   gqlPublicHttpEndpoint,
   gqlPublicWsEndpoint,
   gqlAdminHttpEndpoint,
   gqlAdminWsEndpoint,
-  enableCors,
-  enableLaunchParamsExpiration,
   maxThreadsCount,
-  nodeEnv,
-  vkAppCredentials,
-  vkAppApiRps,
+  port,
+  sentryDsn: sentryDsn === '' ? null : sentryDsn,
+  sentryRelease: packageJson.version + '-' + appEnv,
   vkAppApiAccessToken,
+  vkAppApiRps,
+  vkAppCredentials,
+  vkAppId,
+  vkLaunchParamsExpiration: vkLaunchParamsExpiration * 1000,
 };

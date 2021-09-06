@@ -1,8 +1,4 @@
-import {
-  IAppCredentials,
-  TAppEnvironment,
-  TNodeEnvironment,
-} from '~/shared/types';
+import {IAppCredentials, TAppEnvironment} from '~/shared/types';
 import {isBoolean, isString} from '~/shared/utils';
 import {IConfig} from '~/shared/config/types';
 import {Container} from 'typedi';
@@ -12,8 +8,8 @@ interface IGetStringOptions<Default = string> {
   defaultValue?: Default;
 }
 
-interface IGetNumberOptions {
-  defaultValue?: number;
+interface IGetNumberOptions<Default = number> {
+  defaultValue?: Default;
   type?: 'negative' | 'positive';
 }
 
@@ -23,10 +19,6 @@ interface IGetBooleanOptions {
 
 interface IGetAppEnvironmentOptions {
   defaultValue?: TAppEnvironment;
-}
-
-interface IGetNodeEnvironmentOptions {
-  defaultValue?: TNodeEnvironment;
 }
 
 interface IGetAppCredentialsOptions {
@@ -48,10 +40,10 @@ function createError(envName: string) {
  * @param variableName
  * @param options
  */
-export function getNumber(
+export function getNumber<Default = number>(
   variableName: string,
-  options: IGetNumberOptions = {},
-): number {
+  options: IGetNumberOptions<Default> = {},
+): number | Default {
   const {defaultValue, type} = options;
   const value = Number(process.env[variableName]);
 
@@ -125,30 +117,6 @@ export function getAppEnvironment(
   if (isString(value)) {
     if (['local', 'staging', 'production'].includes(value)) {
       return value as TAppEnvironment;
-    }
-    throw createError(variableName);
-  }
-  if (isString(defaultValue)) {
-    return defaultValue;
-  }
-  throw createError(variableName);
-}
-
-/**
- * Парсит переменную окружения как среду запуска приложения.
- * @param variableName
- * @param options
- */
-export function getNodeEnvironment(
-  variableName: string,
-  options: IGetNodeEnvironmentOptions = {},
-): TNodeEnvironment {
-  const {defaultValue} = options;
-  const value = process.env[variableName];
-
-  if (isString(value)) {
-    if (['development', 'production'].includes(value)) {
-      return value as TNodeEnvironment;
     }
     throw createError(variableName);
   }

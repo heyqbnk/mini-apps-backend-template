@@ -1,7 +1,7 @@
 import {ParsedUrlQuery} from 'querystring';
 import {createHmac} from 'crypto';
 import {TLang} from '~/shared/types';
-import {isString} from '~/shared/utils';
+import {isNumber, isString} from '~/shared/utils';
 import {Container} from 'typedi';
 import {ConfigToken} from '~/shared/di';
 import {AuthorizationError} from '~/shared/errors';
@@ -14,11 +14,6 @@ export interface IVerifiedLaunchParams {
   lang: TLang;
   appId: number;
 }
-
-/**
- * Максимальная длительность жизни параметров запуска.
- */
-const PARAMS_MAX_LIFE_DURATION = 24 * 60 * 60 * 1000;
 
 /**
  * Список известных языков.
@@ -91,13 +86,14 @@ function parseQuery(
 /**
  * Верифицирует параметры запуска.
  * @param searchOrParsedUrlQuery
- * @param maxDuration
  */
 export function verifyLaunchParams(
   searchOrParsedUrlQuery: string | ParsedUrlQuery,
-  maxDuration = PARAMS_MAX_LIFE_DURATION,
 ): IVerifiedLaunchParams {
-  const {vkAppCredentials, enableLaunchParamsExpiration} = Container.get(ConfigToken);
+  const {
+    vkAppCredentials,
+    vkLaunchParamsExpiration,
+  } = Container.get(ConfigToken);
   const {params, sign} = parseQuery(searchOrParsedUrlQuery);
   const keys = Object.keys(params);
 
@@ -110,12 +106,12 @@ export function verifyLaunchParams(
 
   // Если необходима проверка на истечение срока годности параметров запуска,
   // осуществляем её.
-  if (enableLaunchParamsExpiration) {
+  if (isNumber(vkLaunchParamsExpiration)) {
     const timestamp = Number(params.vk_ts);
 
     if (
       Number.isNaN(timestamp) ||
-      Date.now() - timestamp * 1000 > maxDuration
+      Date.now() - timestamp * 1000 > vkLaunchParamsExpiration
     ) {
       throw new AuthorizationError('Время действия параметров запуска истекло');
     }

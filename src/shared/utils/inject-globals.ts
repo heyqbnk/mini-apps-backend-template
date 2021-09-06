@@ -10,7 +10,7 @@ import {config} from '~/shared/config';
 import path from 'path';
 
 if (config.sentryDsn !== null) {
-  const {sentryDsn, appEnv, release, appId} = config;
+  const {sentryDsn, appEnv, sentryRelease, vkAppId} = config;
 
   Sentry.init({
     attachStacktrace: true,
@@ -19,7 +19,7 @@ if (config.sentryDsn !== null) {
     maxValueLength: 10000,
     normalizeDepth: 6,
     environment: appEnv,
-    release,
+    release: sentryRelease,
     tracesSampleRate: 1,
     shutdownTimeout: 1000,
     integrations: [new RewriteFrames({
@@ -28,7 +28,7 @@ if (config.sentryDsn !== null) {
     })],
   });
   Sentry.setTag('Node Version', process.version);
-  Sentry.setTag('Application ID', appId);
+  Sentry.setTag('Application ID', vkAppId);
 }
 // Заменяем контейнер в class-validator.
 useContainer(Container);
