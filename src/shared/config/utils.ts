@@ -196,11 +196,7 @@ export function getAppCredentials(
  * Возвращает конфиг в котором скрыты чувствительные данные.
  */
 export function getSecuredConfig(): IConfig {
-  const {
-    vkAppCredentials,
-    vkAppApiAccessToken,
-    ...rest
-  } = Container.get(ConfigToken);
+  const {vkAppCredentials, ...rest} = Container.get(ConfigToken);
 
   return {
     ...rest,

@@ -36,7 +36,7 @@
 | `SENTRY_DEPLOY_TOKEN` | `string` | Обязателен при `APP_ENV` равном `staging` или `production` | | Токен Sentry используемый при деплое артефактов |
 | `VK_APP_CREDENTIALS` | `AppCredentials` | да | | Список приложений с их секретными ключами у которых есть доступ в API |
 | `VK_APP_API_ACCESS_TOKEN` | `string` | да | | Ключ доступа приложения |
-| `VK_APP_API_RPS` | `number` | нет | `3` | Максимальный RPS для для инстанса VKAPI на основе ключа приложения |
+| `VK_APP_API_RPS` | `number` | нет | `3` | Максимальный RPS для инстанса VKAPI на основе ключа приложения |
 
 ## Скрипты
 ### Общие

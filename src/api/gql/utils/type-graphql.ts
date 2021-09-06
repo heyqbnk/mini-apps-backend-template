@@ -12,7 +12,7 @@ import {Container} from 'typedi';
 import {PubSub} from '~/shared/lib';
 import {isRecord, isString, verifyLaunchParams} from '~/shared/utils';
 import {GraphQLError, GraphQLFormattedError} from 'graphql';
-import {AuthorizationError, EError, NotFoundError} from '~/shared/errors';
+import {AuthorizationError, EError} from '~/shared/errors';
 import {ConfigToken} from '~/shared/di';
 import {UsersService} from '~/shared/services';
 import {SentryMiddleware} from '~/api/gql/middlewares';

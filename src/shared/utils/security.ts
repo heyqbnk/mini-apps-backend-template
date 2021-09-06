@@ -159,10 +159,8 @@ export function verifyLaunchParams(
     return paramsHash === sign;
   });
 
-  // FIXME: Remove
+  if (!isValid) {
+    throw new AuthorizationError('Подпись параметров запуска невалидна');
+  }
   return {userId, lang, appId};
-  // if (!isValid) {
-  //   throw new AuthorizationError('Подпись параметров запуска невалидна');
-  // }
-  // return {userId, lang, appId};
 }
