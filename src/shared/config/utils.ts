@@ -75,10 +75,10 @@ export function getString<Default = string>(
   if (isString(value)) {
     return value;
   }
-  if (isString(defaultValue)) {
-    return defaultValue;
+  if (defaultValue === undefined) {
+    throw createError(variableName);
   }
-  throw createError(variableName);
+  return defaultValue;
 }
 
 /**
